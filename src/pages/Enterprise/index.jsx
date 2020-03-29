@@ -1,6 +1,7 @@
 import React from 'react';
 import { FaTrashAlt, FaEdit } from 'react-icons/fa';
 import { MdAddCircle } from 'react-icons/md';
+import { Link } from 'react-router-dom';
 import ModelTable from '../../components/ModelTable';
 import { Container, Pagination, Content } from './styles';
 
@@ -81,21 +82,21 @@ export default function Enterprise() {
                     </tbody>
                 </ModelTable>
                 <Pagination>
-                    <a href="#">1</a>
-                    <a href="#" className="active">
+                    <a href="http://www.google.com.br">1</a>
+                    <a href="http://www.google.com.br" className="active">
                         2
                     </a>
-                    <a href="#">3</a>
-                    <a href="#">4</a>
-                    <a href="#">5</a>
-                    <a href="#">6</a>
+                    <a href="http://www.google.com.br">3</a>
+                    <a href="http://www.google.com.br">4</a>
+                    <a href="http://www.google.com.br">5</a>
+                    <a href="http://www.google.com.br">6</a>
                 </Pagination>
             </Content>
             <div>
-                <button type="button">
+                <Link to="/enterprise/create">
                     <strong>Criar Nova Empresa</strong>
                     <MdAddCircle size={80} />
-                </button>
+                </Link>
             </div>
         </Container>
     );

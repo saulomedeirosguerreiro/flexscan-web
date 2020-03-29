@@ -9,7 +9,7 @@ export const Container = styled.div`
         strong {
             color: ${darken(0.2, '#999')};
         }
-        button {
+        a {
             background: none;
             border: none;
 

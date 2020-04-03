@@ -3,51 +3,44 @@ import { FaTrashAlt, FaEdit } from 'react-icons/fa';
 import { MdAddCircle } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import ModelTable from '../../components/ModelTable';
-import { Container, Pagination, Content } from './styles';
+import { Container, Content, Pagination } from './styles';
 
-export default function Enterprise() {
-    const [enterprises, setEnterprises] = useState([
+export default function Service() {
+    const [services, setServices] = useState([
         {
             id: 1,
-            name: 'Apodi',
-            description: 'uma pequena descrição da empresa',
+            name: 'Flexuc',
+            description: 'uma pequena descricao do serviço',
         },
         {
             id: 2,
-            name: 'Unimed Fortaleza',
-            description: 'uma pequena descrição da empresa',
+            name: 'FlexChannel',
+            description: 'uma pequena descricao do serviço',
         },
         {
             id: 3,
-            name: 'Grupo Edson Queiroz',
-            description: 'uma pequena descrição da empresa',
+            name: 'GoGreen',
+            description: 'uma pequena descricao do serviço',
         },
         {
             id: 4,
-            name: 'M Dias Branco',
-            description: 'uma pequena descrição da empresa',
+            name: 'Flexuc',
+            description: 'uma pequena descricao do serviço',
         },
         {
             id: 5,
-            name: 'Aviação Princesa',
-            description: 'uma pequena descrição da empresa',
+            name: 'Flexuc',
+            description: 'uma pequena descricao do serviço',
         },
         {
             id: 6,
-            name: 'Libercard',
-            description: 'uma pequena descrição da empresa',
-        },
-        {
-            id: 7,
-            name: 'Unimed Ceará',
-            description: 'uma pequena descrição da empresa',
+            name: 'Flexuc',
+            description: 'uma pequena descricao do serviço',
         },
     ]);
 
     function onDelete(id) {
-        setEnterprises(
-            enterprises.filter((enterprise) => enterprise.id !== id)
-        );
+        setServices(services.filter((service) => service.id !== id));
     }
 
     return (
@@ -62,19 +55,17 @@ export default function Enterprise() {
                         </tr>
                     </thead>
                     <tbody>
-                        {enterprises.map((enterprise) => (
-                            <tr key={enterprise.id}>
-                                <td>{enterprise.name}</td>
-                                <td>{enterprise.description}</td>
+                        {services.map((service) => (
+                            <tr key={service.id}>
+                                <td>{service.name}</td>
+                                <td>{service.description}</td>
                                 <td>
-                                    <Link
-                                        to={`/enterprise/edit/${enterprise.id}`}
-                                    >
+                                    <Link to="/service/edit/1">
                                         <FaEdit color="#008500" size={20} />
                                     </Link>
                                     <button
                                         type="button"
-                                        onClick={() => onDelete(enterprise.id)}
+                                        onClick={() => onDelete(service.id)}
                                     >
                                         <FaTrashAlt color="#008500" size={20} />
                                     </button>
@@ -95,8 +86,8 @@ export default function Enterprise() {
                 </Pagination>
             </Content>
             <div>
-                <Link to="/enterprise/create">
-                    <strong>Criar Nova Empresa</strong>
+                <Link to="/service/create">
+                    <strong>Criar Novo Serviço</strong>
                     <MdAddCircle size={80} />
                 </Link>
             </div>

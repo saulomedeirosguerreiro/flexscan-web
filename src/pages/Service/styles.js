@@ -14,7 +14,7 @@ export const Container = styled.div`
             border: none;
 
             svg {
-                color: ${darken(0.2, '#BB86FC')};
+                color: #5eb81e;
             }
         }
     }
@@ -35,7 +35,7 @@ export const Pagination = styled.div`
     }
 
     a.active {
-        background-color: ${darken(0.2, '#BB86FC')};
+        background-color: #5eb81e;
         color: white;
         border-radius: 5px;
     }

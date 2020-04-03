@@ -27,10 +27,32 @@ export default styled.div`
 
         button {
             color: #fff;
-            background: ${darken(0.2, '#BB86FC')};
+            background: #5eb81e;
             font-weight: bold;
             height: 30px;
             margin-top: 5px;
+        }
+
+        fieldset {
+            display: flex;
+            padding: 10px;
+
+            select {
+                width: 100%;
+            }
+            div {
+                width: 100%;
+                display: flex;
+                justify-content: flex-end;
+
+                button {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    width: 25px;
+                    height: 25px;
+                }
+            }
         }
     }
 `;

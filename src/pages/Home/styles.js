@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 
 export const Container = styled.div`
     margin: 20px 20px;
@@ -8,12 +9,12 @@ export const Container = styled.div`
     grid-template-columns: repeat(5, 1fr);
     padding: 10px;
 `;
-export const Card = styled.div`
+export const Card = styled(Link)`
     display: flex;
     align-items: center;
     justify-content: space-around;
-    background: #3700b3;
-    box-shadow: 2px 2px #6200ee;
+    background: #5eb81e;
+    box-shadow: 2px 2px #2f8f03;
     padding: 20px;
     color: #fff;
     font-size: 14px;
@@ -28,7 +29,7 @@ export const Card = styled.div`
     }
 
     span {
-        background: #6200ee;
+        background: #2f8f03;
         padding: 8px;
         width: 30px;
         height: 30px;

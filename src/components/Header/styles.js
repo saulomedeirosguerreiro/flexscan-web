@@ -3,7 +3,7 @@ import styled from 'styled-components';
 export const Container = styled.header`
     height: 64px;
     border-bottom: 0.5px solid rgba(0, 0, 0, 0.1);
-    background: #6200ee;
+    background: #2f8f03;
     nav {
         display: flex;
         justify-content: flex-end;

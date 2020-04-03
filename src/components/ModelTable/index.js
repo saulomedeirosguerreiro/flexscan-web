@@ -23,7 +23,7 @@ export default styled.table`
     }
 
     th {
-        color: ${darken(0.2, '#BB86FC')};
+        color: #5eb81e;
         border-bottom: 3px solid #dddddd;
     }
 

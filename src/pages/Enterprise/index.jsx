@@ -1,53 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaTrashAlt, FaEdit } from 'react-icons/fa';
 import { MdAddCircle } from 'react-icons/md';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import ModelTable from '../../components/ModelTable';
+import api from '../../services/api';
 import { Container, Pagination, Content } from './styles';
 
 export default function Enterprise() {
-    const [enterprises, setEnterprises] = useState([
-        {
-            id: 1,
-            name: 'Apodi',
-            description: 'uma pequena descrição da empresa',
-        },
-        {
-            id: 2,
-            name: 'Unimed Fortaleza',
-            description: 'uma pequena descrição da empresa',
-        },
-        {
-            id: 3,
-            name: 'Grupo Edson Queiroz',
-            description: 'uma pequena descrição da empresa',
-        },
-        {
-            id: 4,
-            name: 'M Dias Branco',
-            description: 'uma pequena descrição da empresa',
-        },
-        {
-            id: 5,
-            name: 'Aviação Princesa',
-            description: 'uma pequena descrição da empresa',
-        },
-        {
-            id: 6,
-            name: 'Libercard',
-            description: 'uma pequena descrição da empresa',
-        },
-        {
-            id: 7,
-            name: 'Unimed Ceará',
-            description: 'uma pequena descrição da empresa',
-        },
-    ]);
+    const [enterprises, setEnterprises] = useState([]);
 
-    function onDelete(id) {
-        setEnterprises(
-            enterprises.filter((enterprise) => enterprise.id !== id)
-        );
+    useEffect(() => {
+        async function loadEnterprises() {
+            const response = await api.get('/enterprises');
+            setEnterprises(response.data);
+        }
+
+        loadEnterprises();
+    }, []);
+
+    async function onDelete(id) {
+        try {
+            await api.delete(`/enterprises/${id}`);
+            setEnterprises(
+                enterprises.filter((enterprise) => enterprise._id !== id)
+            );
+            toast.success('Empresa Removida com Sucesso');
+        } catch (err) {
+            toast.error('Falha na Remoção da Empresa');
+        }
     }
 
     return (
@@ -63,18 +44,18 @@ export default function Enterprise() {
                     </thead>
                     <tbody>
                         {enterprises.map((enterprise) => (
-                            <tr key={enterprise.id}>
+                            <tr key={enterprise._id}>
                                 <td>{enterprise.name}</td>
                                 <td>{enterprise.description}</td>
                                 <td>
                                     <Link
-                                        to={`/enterprise/edit/${enterprise.id}`}
+                                        to={`/enterprise/edit/${enterprise._id}`}
                                     >
                                         <FaEdit color="#008500" size={20} />
                                     </Link>
                                     <button
                                         type="button"
-                                        onClick={() => onDelete(enterprise.id)}
+                                        onClick={() => onDelete(enterprise._id)}
                                     >
                                         <FaTrashAlt color="#008500" size={20} />
                                     </button>

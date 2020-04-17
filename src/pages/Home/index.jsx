@@ -1,50 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { Container, Card } from './styles';
 import businessIcon from '../../assets/image/business-icon.png';
+import api from '../../services/api';
 
 export default function Home() {
-    const [enterprises, setEnterprises] = useState([
-        {
-            id: 1,
-            name: 'Apodi',
-            amount: 1,
-        },
-        {
-            id: 2,
-            name: 'Unimed Fortaleza',
-            amount: 2,
-        },
-        {
-            id: 3,
-            name: 'Grupo Edson Queiroz',
-            amount: 3,
-        },
-        {
-            id: 4,
-            name: 'M Dias Branco',
-            amount: 1,
-        },
-        {
-            id: 5,
-            name: 'Aviação Princesa',
-            amount: 1,
-        },
-        {
-            id: 6,
-            name: 'Libercard',
-            amount: 3,
-        },
-        {
-            id: 7,
-            name: 'Unimed Ceará',
-            amount: 4,
-        },
-    ]);
+    const [enterprises, setEnterprises] = useState([]);
+
+    useEffect(() => {
+        async function loadEnterprises() {
+            const response = await api.get('/enterprises');
+            const data = response.data.map((enterprise) => ({
+                ...enterprise,
+                amount: enterprise.services.length,
+            }));
+
+            setEnterprises(data);
+        }
+
+        loadEnterprises();
+    }, []);
+
     return (
         <Container>
             {enterprises.map((enterprise) => (
-                <Card key={enterprise.id} to={`/enterprise/${enterprise.id}`}>
+                <Card key={enterprise._id} to={`/enterprise/${enterprise._id}`}>
                     <img src={businessIcon} alt={enterprise.name} />
                     <strong>{enterprise.name}</strong>
                     <span>{enterprise.amount}</span>

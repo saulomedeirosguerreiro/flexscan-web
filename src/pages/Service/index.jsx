@@ -1,46 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaTrashAlt, FaEdit } from 'react-icons/fa';
 import { MdAddCircle } from 'react-icons/md';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import ModelTable from '../../components/ModelTable';
 import { Container, Content, Pagination } from './styles';
+import api from '../../services/api';
 
 export default function Service() {
-    const [services, setServices] = useState([
-        {
-            id: 1,
-            name: 'Flexuc',
-            description: 'uma pequena descricao do serviço',
-        },
-        {
-            id: 2,
-            name: 'FlexChannel',
-            description: 'uma pequena descricao do serviço',
-        },
-        {
-            id: 3,
-            name: 'GoGreen',
-            description: 'uma pequena descricao do serviço',
-        },
-        {
-            id: 4,
-            name: 'Flexuc',
-            description: 'uma pequena descricao do serviço',
-        },
-        {
-            id: 5,
-            name: 'Flexuc',
-            description: 'uma pequena descricao do serviço',
-        },
-        {
-            id: 6,
-            name: 'Flexuc',
-            description: 'uma pequena descricao do serviço',
-        },
-    ]);
+    const [services, setServices] = useState([]);
 
-    function onDelete(id) {
-        setServices(services.filter((service) => service.id !== id));
+    useEffect(() => {
+        async function loadServices() {
+            const response = await api.get('/services');
+            setServices(response.data);
+        }
+
+        loadServices();
+    }, []);
+
+    async function onDelete(id) {
+        try {
+            await api.delete(`/services/${id}`);
+            setServices(services.filter((service) => service._id !== id));
+            toast.success('Serviço Removido com Sucesso');
+        } catch (err) {
+            toast.error('Falha na Remoção do Serviço');
+        }
     }
 
     return (
@@ -56,16 +42,16 @@ export default function Service() {
                     </thead>
                     <tbody>
                         {services.map((service) => (
-                            <tr key={service.id}>
+                            <tr key={service._id}>
                                 <td>{service.name}</td>
                                 <td>{service.description}</td>
                                 <td>
-                                    <Link to="/service/edit/1">
+                                    <Link to={`/service/edit/${service._id}`}>
                                         <FaEdit color="#008500" size={20} />
                                     </Link>
                                     <button
                                         type="button"
-                                        onClick={() => onDelete(service.id)}
+                                        onClick={() => onDelete(service._id)}
                                     >
                                         <FaTrashAlt color="#008500" size={20} />
                                     </button>

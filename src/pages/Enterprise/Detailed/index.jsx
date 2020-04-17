@@ -1,62 +1,31 @@
-import React, { useState } from 'react';
-
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import api from '../../../services/api';
 import { Container, ContentContainer, Card, Content } from './styles';
 import GoBack from '../../../components/GoBack';
 
 export default function Detailed({ match }) {
     const { id } = match.params;
+    const [services, setServices] = useState([]);
+    const [enterpriseName, setEnterpriseName] = useState('');
 
-    const [services, setServices] = useState([
-        {
-            id: 1,
-            name: 'Flexuc',
-            version: '1.0.2',
-            stability: 'Beta',
-            date: '10/01/20',
-        },
-        {
-            id: 2,
-            name: 'FlexChannel',
-            version: '1.3.2',
-            stability: 'Beta',
-            date: '09/04/20',
-        },
-        {
-            id: 3,
-            name: 'GoGreen',
-            version: '1.7.2',
-            stability: 'Beta',
-            date: '05/02/20',
-        },
-        {
-            id: 4,
-            name: 'Flexuc',
-            version: '1.0.2',
-            stability: 'Alfa',
-            date: '10/04/20',
-        },
-        {
-            id: 5,
-            name: 'FlexChannel',
-            version: '1.3.2',
-            stability: 'Beta',
-            date: '10/04/20',
-        },
-        {
-            id: 6,
-            name: 'Flexia',
-            version: '1.0.2',
-            stability: 'Alfa',
-            date: '1/02/ 20',
-        },
-    ]);
+    useEffect(() => {
+        async function loadServices() {
+            const response = await api.get(`/dashboards/card/${id}`);
+            setEnterpriseName(response.data.name);
+            setServices(response.data.services);
+        }
+
+        loadServices();
+    }, [id]);
+
     return (
         <Container>
             <GoBack to="/" />
-            <h1>Nome da Empresa</h1>
+            <h1>{enterpriseName}</h1>
             <ContentContainer>
                 {services.map((service) => (
-                    <Card key={service.id}>
+                    <Card key={service._id}>
                         <h3>{service.name}</h3>
                         <Content>
                             <strong>Versão</strong>
@@ -72,3 +41,11 @@ export default function Detailed({ match }) {
         </Container>
     );
 }
+
+Detailed.propTypes = {
+    match: PropTypes.shape({
+        params: PropTypes.shape({
+            id: PropTypes.string.isRequired,
+        }).isRequired,
+    }).isRequired,
+};

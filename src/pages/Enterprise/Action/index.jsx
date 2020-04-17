@@ -1,57 +1,168 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Input } from '@rocketseat/unform';
 import { MdAdd, MdEdit } from 'react-icons/md';
-import { FaTrashAlt, FaEdit, FaAngleDoubleRight } from 'react-icons/fa';
+import { FaTrashAlt, FaEdit, FaAngleDoubleRight, FaUndo } from 'react-icons/fa';
+import PropTypes from 'prop-types';
+import { toast } from 'react-toastify';
 import FormContainer from '../../../components/FormContainer';
 import GoBack from '../../../components/GoBack';
 import ModelTable from '../../../components/ModelTable';
+import api from '../../../services/api';
 
 import { Container } from './styles';
 
-export default function CreateEnterprise({ match }) {
+export default function ActionEnterprise(props) {
+    const { match } = props;
     const { id } = match.params;
 
     const isEdit = !!id;
 
-    const [services, setServices] = useState([
-        {
-            id: 1,
-            name: 'Flexuc',
-            endpoint: 'http://127.0.0.1:5340/teste',
-        },
-        {
-            id: 2,
-            name: 'FlexChannel',
-            endpoint: 'http://127.0.0.1:5040/teste',
-        },
-        {
-            id: 3,
-            name: 'GoGreen',
-            endpoint: 'http://127.0.0.1:5040/teste',
-        },
-        {
-            id: 4,
-            name: 'Flexuc',
-            endpoint: 'http://127.0.0.1:5240/teste',
-        },
-        {
-            id: 5,
-            name: 'Flexuc',
-            endpoint: 'http://127.0.0.1:5040/teste',
-        },
-        {
-            id: 6,
-            name: 'FlexChannel',
-            endpoint: 'http://127.0.0.1:5000/teste',
-        },
-    ]);
+    const [enterpriseName, setEnterpriseName] = useState('');
+    const [enterpriseDescription, setEnterpriseDescription] = useState('');
 
-    function onDelete(identifier) {
-        setServices(services.filter((service) => service.id !== identifier));
+    const [isEditEnterpriseService, setIsEditEnterpriseService] = useState(
+        false
+    );
+
+    const [enterpriseServices, setEnterpriseServices] = useState([]);
+
+    const [services, setServices] = useState([]);
+
+    const [enterpriseService, setEnterpriseService] = useState({
+        temporaryKey: undefined,
+        name: 'undefined',
+        endpoint: '',
+        description: '',
+    });
+
+    useEffect(() => {
+        async function loadEnterpriseServices() {
+            if (id) {
+                const response = await api.get(`/enterprises/${id}`);
+                const { name, description } = response.data;
+                setEnterpriseServices(response.data.services);
+                setEnterpriseName(name);
+                setEnterpriseDescription(description);
+            }
+        }
+        loadEnterpriseServices();
+    }, [id]);
+
+    useEffect(() => {
+        async function loadServices() {
+            const response = await api.get('/services');
+            setServices(response.data);
+        }
+
+        loadServices();
+    }, []);
+
+    async function handleSubmit(data, { resetForm }) {
+        const dataWithServices = { ...data, services: enterpriseServices };
+        try {
+            if (isEdit) {
+                await api.put(`/enterprises/${id}`, dataWithServices);
+            } else {
+                await api.post('/enterprises', dataWithServices);
+            }
+            toast.success(
+                `Empresa ${isEdit ? 'Editado' : 'Criado'} com Sucesso`
+            );
+            if (!isEdit) resetForm();
+        } catch (err) {
+            toast.error(
+                `Não foi possível  ${isEdit ? 'Editar' : 'Criar'} Empresa`
+            );
+        }
     }
 
-    function handleSubmit(data) {
-        console.log(data);
+    function resetFieldSet() {
+        setEnterpriseService({
+            temporaryKey: undefined,
+            name: 'undefined',
+            endpoint: '',
+            description: '',
+        });
+    }
+
+    function addEnterpriseService() {
+        const temporaryKey = isEditEnterpriseService
+            ? enterpriseService.temporaryKey
+            : `#${enterpriseServices.length + 1}`;
+        const { name, endpoint, description } = enterpriseService;
+
+        if (isEditEnterpriseService) {
+            const index = enterpriseServices.findIndex(
+                (es) => es.temporaryKey === temporaryKey
+            );
+            enterpriseServices[index] = {
+                temporaryKey,
+                name,
+                endpoint,
+                description,
+            };
+            setIsEditEnterpriseService(false);
+        } else {
+            setEnterpriseServices([
+                ...enterpriseServices,
+                {
+                    temporaryKey,
+                    name,
+                    endpoint,
+                    description,
+                },
+            ]);
+        }
+
+        resetFieldSet();
+    }
+
+    function fillOldEnterpriseService(oldEnterpriseService) {
+        setIsEditEnterpriseService(true);
+        const {
+            temporaryKey,
+            name,
+            endpoint,
+            description,
+        } = oldEnterpriseService;
+
+        setEnterpriseService({
+            temporaryKey,
+            name,
+            endpoint,
+            description,
+        });
+    }
+
+    function changeEnterpriseService(e) {
+        switch (e.target.id) {
+            case 'service':
+                setEnterpriseService({
+                    ...enterpriseService,
+                    name: e.target.value,
+                });
+                break;
+            case 'ip':
+                setEnterpriseService({
+                    ...enterpriseService,
+                    endpoint: e.target.value,
+                });
+                break;
+            case 'servicedescription':
+                setEnterpriseService({
+                    ...enterpriseService,
+                    description: e.target.value,
+                });
+                break;
+            default:
+                break;
+        }
+    }
+
+    function onDeleteEnterpriseService(identifier) {
+        setEnterpriseServices(
+            enterpriseServices.filter((es) => es.temporaryKey !== identifier)
+        );
     }
 
     return (
@@ -64,30 +175,82 @@ export default function CreateEnterprise({ match }) {
                             <h1>Empresa</h1>
                         </legend>
                         <label htmlFor="name">Nome</label>
-                        <Input name="name" id="name" type="text" size="50" />
+                        <Input
+                            name="name"
+                            id="name"
+                            type="text"
+                            size="50"
+                            required
+                            onChange={(e) => setEnterpriseName(e.target.value)}
+                            value={enterpriseName}
+                        />
                         <label htmlFor="description">Descrição</label>
                         <Input
                             name="description"
                             id="description"
                             type="text"
                             size="50"
+                            onChange={(e) =>
+                                setEnterpriseDescription(e.target.value)
+                            }
+                            value={enterpriseDescription}
                         />
                         <fieldset>
                             <legend>Serviço:</legend>
                             <label htmlFor="service">Name</label>
-                            <select id="service" name="service">
-                                <option value="Flexuc">Flexuc</option>
-                                <option value="FlexChannel">FlexChannel</option>
-                                <option value="GoGreen">GoGreen</option>
+                            <select
+                                id="service"
+                                name="service"
+                                onChange={changeEnterpriseService}
+                                value={enterpriseService.name}
+                            >
+                                <option value="undefined">
+                                    Escolha uma opção
+                                </option>
+                                {services.map((service) => (
+                                    <option
+                                        key={service._id}
+                                        value={service.name}
+                                    >
+                                        {service.name}
+                                    </option>
+                                ))}
                             </select>
                             <label htmlFor="ip">IP</label>
-                            <Input name="ip" id="ip" type="text" size="50" />
+                            <Input
+                                name="ip"
+                                id="ip"
+                                type="text"
+                                size="50"
+                                onChange={changeEnterpriseService}
+                                value={enterpriseService.endpoint}
+                            />
+                            <label htmlFor="servicedescription">
+                                Descrição
+                            </label>
+                            <Input
+                                name="servicedescription"
+                                id="servicedescription"
+                                type="text"
+                                size="50"
+                                onChange={changeEnterpriseService}
+                                value={enterpriseService.description}
+                            />
                             <div>
-                                <button type="button">
-                                    {isEdit ? (
-                                        <MdEdit color="#5eb81e;" size={20} />
+                                <button
+                                    type="button"
+                                    onClick={() => resetFieldSet()}
+                                >
+                                    <FaUndo color="#FFF" size={10} />
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => addEnterpriseService()}
+                                >
+                                    {isEditEnterpriseService ? (
+                                        <MdEdit color="#FFF" size={20} />
                                     ) : (
-                                        <MdAdd color="#5eb81e;" size={20} />
+                                        <MdAdd color="#FFF" size={20} />
                                     )}
                                 </button>
                             </div>
@@ -107,17 +270,26 @@ export default function CreateEnterprise({ match }) {
                             </tr>
                         </thead>
                         <tbody>
-                            {services.map((service) => (
-                                <tr key={service.id}>
-                                    <td>{service.name}</td>
-                                    <td>{service.endpoint}</td>
+                            {enterpriseServices.map((es) => (
+                                <tr key={es.temporaryKey}>
+                                    <td>{es.name}</td>
+                                    <td>{es.endpoint}</td>
                                     <td>
-                                        <button type="button">
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                fillOldEnterpriseService(es)
+                                            }
+                                        >
                                             <FaEdit color="#008500" size={20} />
                                         </button>
                                         <button
                                             type="button"
-                                            onClick={() => onDelete(service.id)}
+                                            onClick={() =>
+                                                onDeleteEnterpriseService(
+                                                    es.temporaryKey
+                                                )
+                                            }
                                         >
                                             <FaTrashAlt
                                                 color="#008500"
@@ -134,3 +306,11 @@ export default function CreateEnterprise({ match }) {
         </>
     );
 }
+
+ActionEnterprise.propTypes = {
+    match: PropTypes.shape({
+        params: PropTypes.shape({
+            id: PropTypes.string,
+        }).isRequired,
+    }).isRequired,
+};

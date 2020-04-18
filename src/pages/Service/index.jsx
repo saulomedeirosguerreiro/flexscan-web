@@ -61,14 +61,9 @@ export default function Service() {
                     </tbody>
                 </ModelTable>
                 <Pagination>
-                    <a href="http://www.google.com.br">1</a>
-                    <a href="http://www.google.com.br" className="active">
-                        2
+                    <a href="substituir" className="active">
+                        1
                     </a>
-                    <a href="http://www.google.com.br">3</a>
-                    <a href="http://www.google.com.br">4</a>
-                    <a href="http://www.google.com.br">5</a>
-                    <a href="http://www.google.com.br">6</a>
                 </Pagination>
             </Content>
             <div>

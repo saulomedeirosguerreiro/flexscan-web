@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import { Form, Input } from '@rocketseat/unform';
 import PropTypes from 'prop-types';
 import { toast } from 'react-toastify';
@@ -8,6 +9,7 @@ import api from '../../../services/api';
 
 export default function ActionService({ match }) {
     const { id } = match.params;
+    const history = useHistory();
     const isEdit = !!id;
     const [serviceName, setServiceName] = useState('');
     const [serviceDescription, setServiceDescription] = useState('');
@@ -34,6 +36,7 @@ export default function ActionService({ match }) {
                 `Serviço ${isEdit ? 'Editado' : 'Criado'} com Sucesso`
             );
             if (!isEdit) resetForm();
+            history.goBack();
         } catch (err) {
             toast.error(
                 `Não foi possível  ${isEdit ? 'Editar' : 'Criar'} Serviço`

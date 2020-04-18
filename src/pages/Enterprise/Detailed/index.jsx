@@ -34,6 +34,8 @@ export default function Detailed({ match }) {
                             <span>{service.stability}</span>
                             <strong>Criado em</strong>
                             <span>{service.date}</span>
+                            <strong>Descrição</strong>
+                            <span>{service.description || 'N/A'}</span>
                         </Content>
                     </Card>
                 ))}

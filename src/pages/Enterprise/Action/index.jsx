@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import { Form, Input } from '@rocketseat/unform';
 import { MdAdd, MdEdit } from 'react-icons/md';
 import { FaTrashAlt, FaEdit, FaAngleDoubleRight, FaUndo } from 'react-icons/fa';
@@ -11,10 +12,9 @@ import api from '../../../services/api';
 
 import { Container } from './styles';
 
-export default function ActionEnterprise(props) {
-    const { match } = props;
+export default function ActionEnterprise({ match }) {
     const { id } = match.params;
-
+    const history = useHistory();
     const isEdit = !!id;
 
     const [enterpriseName, setEnterpriseName] = useState('');
@@ -40,7 +40,11 @@ export default function ActionEnterprise(props) {
             if (id) {
                 const response = await api.get(`/enterprises/${id}`);
                 const { name, description } = response.data;
-                setEnterpriseServices(response.data.services);
+                const currentServices = response.data.services.map((item) => ({
+                    ...item,
+                    temporaryKey: item._id,
+                }));
+                setEnterpriseServices(currentServices);
                 setEnterpriseName(name);
                 setEnterpriseDescription(description);
             }
@@ -58,7 +62,10 @@ export default function ActionEnterprise(props) {
     }, []);
 
     async function handleSubmit(data, { resetForm }) {
-        const dataWithServices = { ...data, services: enterpriseServices };
+        const dataWithServices = {
+            ...data,
+            services: enterpriseServices,
+        };
         try {
             if (isEdit) {
                 await api.put(`/enterprises/${id}`, dataWithServices);
@@ -66,9 +73,10 @@ export default function ActionEnterprise(props) {
                 await api.post('/enterprises', dataWithServices);
             }
             toast.success(
-                `Empresa ${isEdit ? 'Editado' : 'Criado'} com Sucesso`
+                `Empresa ${isEdit ? 'Editada' : 'Criada'} com Sucesso`
             );
             if (!isEdit) resetForm();
+            history.goBack();
         } catch (err) {
             toast.error(
                 `Não foi possível  ${isEdit ? 'Editar' : 'Criar'} Empresa`
@@ -85,17 +93,33 @@ export default function ActionEnterprise(props) {
         });
     }
 
-    function addEnterpriseService() {
+    function isValidParameters(endpoint, name) {
+        if (!endpoint || endpoint.trim() === '') {
+            toast.error(`Campo IP é obrigatório`);
+            return false;
+        }
+        if (name && name === 'undefined') {
+            toast.error(`Campo Name é obrigatório`);
+            return false;
+        }
+
+        return true;
+    }
+
+    function actionEnterpriseService() {
         const temporaryKey = isEditEnterpriseService
             ? enterpriseService.temporaryKey
             : `#${enterpriseServices.length + 1}`;
         const { name, endpoint, description } = enterpriseService;
+
+        if (!isValidParameters(endpoint, name)) return;
 
         if (isEditEnterpriseService) {
             const index = enterpriseServices.findIndex(
                 (es) => es.temporaryKey === temporaryKey
             );
             enterpriseServices[index] = {
+                _id: enterpriseServices[index]._id,
                 temporaryKey,
                 name,
                 endpoint,
@@ -197,7 +221,7 @@ export default function ActionEnterprise(props) {
                         />
                         <fieldset>
                             <legend>Serviço:</legend>
-                            <label htmlFor="service">Name</label>
+                            <label htmlFor="service">Nome</label>
                             <select
                                 id="service"
                                 name="service"
@@ -245,7 +269,7 @@ export default function ActionEnterprise(props) {
                                 </button>
                                 <button
                                     type="button"
-                                    onClick={() => addEnterpriseService()}
+                                    onClick={() => actionEnterpriseService()}
                                 >
                                     {isEditEnterpriseService ? (
                                         <MdEdit color="#FFF" size={20} />

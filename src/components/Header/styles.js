@@ -18,4 +18,25 @@ export const Container = styled.header`
     }
 `;
 
-export const Content = styled.div``;
+export const Content = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+`;
+
+export const CurrentPageContainer = styled.div`
+    background: #fff;
+    opacity: 0.5;
+    margin: 0.5em 1em 1em 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50px;
+    width: 200px;
+    border-bottom-right-radius: 90px;
+    border-top-right-radius: 90px;
+
+    svg {
+        margin-right: 10px;
+    }
+`;
